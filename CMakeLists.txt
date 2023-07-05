@@ -13,6 +13,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+# add in Eigen3
 include(FetchContent)
 FetchContent_Declare(
   Eigen3
@@ -20,6 +21,8 @@ FetchContent_Declare(
   GIT_TAG master
 )
 FetchContent_MakeAvailable(Eigen3)
+
+
 
 # add the source files
 add_subdirectory(src)
