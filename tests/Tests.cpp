@@ -35,7 +35,6 @@ int TestQuad(int n) {
   return (error1 < eps<Float> and error2 < eps<Float>) ? 0 : 1;
 }
 
-
 // Set the tests.
 TEST(Gauss, Float) {
   int i = TestQuad<float, GaussQuad::None>(n);
@@ -52,8 +51,6 @@ TEST(Gauss, LongDouble) {
   EXPECT_EQ(i, 0);
 }
 
-
-
 TEST(Radau, Float) {
   int i = TestQuad<float, GaussQuad::Radau>(n);
   EXPECT_EQ(i, 0);
@@ -68,7 +65,6 @@ TEST(Radau, LongDouble) {
   int i = TestQuad<long double, GaussQuad::Radau>(n);
   EXPECT_EQ(i, 0);
 }
-
 
 TEST(Lobatto, Float) {
   int i = TestQuad<float, GaussQuad::Lobatto>(n);

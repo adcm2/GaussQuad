@@ -1,12 +1,10 @@
-#include <iostream>
-#include <fstream>
-#include "GaussQuad.h"
 #include <concepts>
+#include <fstream>
+#include <iostream>
 
-int main()
-{
+#include "GaussQuad.h"
 
-
+int main() {
   // Set the output precision
   using std::cout;
   using std::endl;
@@ -16,29 +14,25 @@ int main()
 
   // Set the floating point precision
   using Float = double;
-  
+
   // Set the quadrature type
   using QuadratureType = typename GaussQuad::Radau;
 
   // Build the quadrature
-  int n  = 5;
-  GaussQuad::Quadrature<Float,QuadratureType> q(n);
+  int n = 5;
+  GaussQuad::Quadrature<Float, QuadratureType> q(n);
 
-  
   // write out the points and weights
-  for(int i = 0; i < n; i++)
-    {
-      std::cout << q.x(i) << " " << q.w(i) << std::endl;      
-    }
+  for (int i = 0; i < n; i++) {
+    std::cout << q.x(i) << " " << q.w(i) << std::endl;
+  }
 
   // define a simple function to integrate
-  auto fun = [](Float x)  { return x*x; };
+  auto fun = [](Float x) { return x * x; };
 
   // set the exact value for the integral
-  Float exact = Float(2.0)/Float(3.0);
-  
-  cout << "Numerical value = " << q.integrate(fun) << ", exact value = " << exact << endl;
-  
+  Float exact = Float(2.0) / Float(3.0);
 
-
+  cout << "Numerical value = " << q.integrate(fun)
+       << ", exact value = " << exact << endl;
 }
