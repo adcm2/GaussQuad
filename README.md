@@ -5,8 +5,8 @@
 
 ## References
 <a id="1">[1]</a> 
-Dijkstra, E. W. (1968). 
-Go to statement considered harmful. 
-Communications of the ACM, 11(3), 147-148.
+Golub, Gene H and Welsch, John H, 1969, 
+Calculation of Gauss quadrature rules. 
+Mathematics of computation, 23, 221--230.
 
 
