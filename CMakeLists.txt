@@ -13,10 +13,30 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+include(FetchContent)
+FetchContent_Declare(
+  Eigen3
+  GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+  GIT_TAG master
+)
+FetchContent_MakeAvailable(Eigen3)
 
-enable_testing()
-
+# add the source files
 add_subdirectory(src)
-add_subdirectory(test)
-add_subdirectory(examples)
+
+# optionally add in the examples and tests
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    # We're in the root, define additional targets for developers.
+    option(MY_PROJECT_BUILD_EXAMPLES   "whether or not examples should be built" ON)
+    option(MY_PROJECT_BUILD_TESTS      "whether or not tests should be built" ON)
+
+    if(MY_PROJECT_BUILD_EXAMPLES)
+        add_subdirectory(examples)
+    endif()
+    if(MY_PROJECT_BUILD_TESTS)
+        enable_testing()
+        add_subdirectory(tests)
+    endif()
+endif()
+
+
