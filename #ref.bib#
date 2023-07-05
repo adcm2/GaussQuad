@@ -1,0 +1,9 @@
+@article{golub1969calculation,
+  title={Calculation of Gauss quadrature rules},
+  author={Golub, Gene H and Welsch, John H},
+  journal={Mathematics of computation},
+  volume={23},
+  number={106},
+  pages={221--230},
+  year={1969}
+}

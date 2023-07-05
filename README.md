@@ -1,7 +1,7 @@
 # GaussQuad
 
 
-"...the **go to** statement should be abolished..." [[1]](#1).
+c++ header-only template library for Gaussian quadrature. Calculations are done using the method of  [[1]](#1). Linear algebra calcuations are done using Eigen3.
 
 ## References
 <a id="1">[1]</a> 
