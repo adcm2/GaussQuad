@@ -5,7 +5,7 @@ c++ header-only template library for Gaussian quadrature. Calculations are done 
 
 ## References
 <a id="1">[1]</a> 
-Golub, Gene H and Welsch, John H, 1969, 
+Golub, Gene H and Welsch, John H, 1969.
 Calculation of Gauss quadrature rules. 
 Mathematics of computation, 23, 221--230.
 
