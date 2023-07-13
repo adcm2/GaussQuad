@@ -8,12 +8,11 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
   message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there. You may need to remove CMakeCache.txt. ")
 endif()
 
-
-      
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 
-
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # add in Eigen3
@@ -26,14 +25,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Eigen3)
 
 # Set up the library
-add_library (GaussQuad INTERFACE GaussQuad.h)
-
-target_link_libraries(GaussQuad INTERFACE Eigen3::Eigen)
-
-target_include_directories (GaussQuad INTERFACE
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-  $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>
-)
+add_subdirectory(include)
 
 
 # optionally add in the examples and tests
