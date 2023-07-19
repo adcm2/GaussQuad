@@ -25,7 +25,12 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Eigen3)
 
 # Set up the library
-add_subdirectory(include)
+add_library (GaussQuad INTERFACE)
+target_link_libraries(GaussQuad INTERFACE Eigen3::Eigen)
+target_include_directories (GaussQuad INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>
+)
 
 
 # optionally add in the examples and tests

@@ -4,7 +4,7 @@
 #include <concepts>
 #include <limits>
 
-#include "GaussQuad.h"
+#include <GaussQuad/Core>
 
 // set some data.
 constexpr int n = 10;
