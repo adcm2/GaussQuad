@@ -10,7 +10,7 @@
 constexpr int n = 10;
 
 template <std::floating_point Float>
-constexpr Float exact = Float(2.0) / Float(3.0);
+constexpr Float exact = static_cast<Float>(2.0) / static_cast<Float>(3.0);
 
 template <std::floating_point Float>
 constexpr auto eps = 100 * std::numeric_limits<Float>::epsilon();
