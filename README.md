@@ -1,7 +1,7 @@
 # GaussQuad
 
 
-c++ header-only template library for Gaussian quadrature. Calculations are done using the method of  [[1]](#1). Linear algebra calcuations are done using Eigen3.
+c++ header-only template library for Gaussian quadrature based on the method of  [[1]](#1). Linear algebra calcuations are done using Eigen3.
 
 ## References
 <a id="1">[1]</a> 
