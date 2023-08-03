@@ -1,10 +1,9 @@
 #include <gtest/gtest.h>
 
+#include <GaussQuad/All>
 #include <complex>
 #include <concepts>
 #include <limits>
-
-#include <GaussQuad/Core>
 
 // set some data.
 constexpr int n = 10;

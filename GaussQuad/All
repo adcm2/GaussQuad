@@ -1,5 +1,5 @@
-#ifndef GAUSSQUAD_CORE_MODULE_H
-#define GAUSSQUAD_CORE_MODULE_H
+#ifndef GAUSSQUAD_ALL_MODULE_H
+#define GAUSSQUAD_ALL_MODULE_H
 
 // Header files to be included to use the GaussQuad library.
 #include "src/OrthogonalPolynomial.h"
