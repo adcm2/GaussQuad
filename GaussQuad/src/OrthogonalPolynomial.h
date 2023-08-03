@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <concepts>
+#include <numbers>
 
 namespace GaussQuad {
 
