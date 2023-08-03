@@ -1,9 +1,8 @@
-#ifndef OrthogonalPolynomial_GUARD_H
-#define OrthogonalPolynomial_GUARD_H
+#ifndef GAUSS_QUAD_ORTHOGONAL_POLYNOMIAL_GUARD_H
+#define GAUSS_QUAD_ORTHOGONAL_POLYNOMIAL_GUARD_H
 
 #include <cmath>
 #include <concepts>
-
 
 namespace GaussQuad {
 
@@ -131,7 +130,7 @@ class Jacobi final : public OrthogonalPolynomial<Float> {
     Float x(n);
     Float num = 4 * x * (x + alpha) * (x + beta) * (x + alpha + beta);
     Float den = (2 * x + alpha + beta - 1) * pow((2 * x + alpha + beta), 2) *
-               (2 * x + alpha + beta + 1);
+                (2 * x + alpha + beta + 1);
     return sqrt(num / den);
   }
 
@@ -142,4 +141,4 @@ class Jacobi final : public OrthogonalPolynomial<Float> {
 
 }  // namespace GaussQuad
 
-#endif  // OrthogonalPolynomial_GUARD_H
+#endif  // GAUSS_QUAD_ORTHOGONAL_POLYNOMIAL_GUARD_H

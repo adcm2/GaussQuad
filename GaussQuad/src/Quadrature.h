@@ -1,5 +1,5 @@
-#ifndef GaussQuad_GUARD_H
-#define GaussQuad_GUARD_H
+#ifndef GAUSS_QUAD_QUADRATURE_GUARD_H
+#define GAUSS_QUAD_QUADRATURE_GUARD_H
 
 #include <Eigen/Cholesky>
 #include <Eigen/Core>
@@ -209,4 +209,4 @@ class Quadrature {
 
 }  // namespace GaussQuad
 
-#endif // GaussQuad_GUARD_H
+#endif  // GAUSS_QUAD_QUADRATURE_GUARD_H
