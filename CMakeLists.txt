@@ -24,9 +24,20 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Eigen3)
 
+
+# add in Spectra
+include(FetchContent)
+FetchContent_Declare(
+  Spectra
+  GIT_REPOSITORY https://github.com/yixuan/spectra.git
+  GIT_TAG master
+)
+FetchContent_MakeAvailable(Spectra)
+
+
 # Set up the library
 add_library (GaussQuad INTERFACE)
-target_link_libraries(GaussQuad INTERFACE Eigen3::Eigen)
+target_link_libraries(GaussQuad INTERFACE Eigen3::Eigen Spectra)
 target_include_directories (GaussQuad INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>

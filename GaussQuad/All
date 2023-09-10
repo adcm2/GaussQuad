@@ -3,6 +3,8 @@
 
 // Header files to be included to use the GaussQuad library.
 #include "src/OrthogonalPolynomial.h"
+#include "src/Jacobi.h"
 #include "src/Quadrature.h"
+
 
 #endif  
