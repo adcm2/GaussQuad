@@ -1,9 +1,27 @@
 #include <GaussQuad/All>
+#include <chrono>
 #include <concepts>
 #include <fstream>
 #include <iostream>
 
 int main() {
+  using Float = double;
+
+  using namespace GaussQuad;
+
+  using namespace std::chrono;
+
+  int n = 256;
+
+  auto start = high_resolution_clock::now();
+  LegendrePolynomial<Float> p;
+  auto quad = p.ZerosAndWeights(n);
+  auto stop = high_resolution_clock::now();
+  auto duration = duration_cast<microseconds>(stop - start);
+  std::cout << duration.count() << std::endl;
+
+  /*
+
   // Set the output precision
   using std::cout;
   using std::endl;
@@ -34,4 +52,6 @@ int main() {
 
   cout << "Numerical value = " << q.integrate(fun)
        << ", exact value = " << exact << endl;
+
+  */
 }

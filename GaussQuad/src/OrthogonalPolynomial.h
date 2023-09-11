@@ -1,6 +1,7 @@
 #ifndef GAUSS_QUAD_ORTHOGONAL_POLYNOMIAL_GUARD_H
 #define GAUSS_QUAD_ORTHOGONAL_POLYNOMIAL_GUARD_H
 
+#include <algorithm>
 #include <array>
 #include <cassert>
 #include <cmath>
@@ -113,7 +114,7 @@ class JacobiPolynomial {
                  std::lgamma(static_cast<Float>(n + 1)) -
                  std::lgamma(alpha + beta + n + 1));
     std::transform(
-        zeros.begin(), zeros.end(), weights.begin(),
+        zeros.begin(), zeros.end(), weights.begin(), weights.begin(),
         [fac](auto z, auto w) { return fac / (w * w * (1 - z * z)); });
     return std::pair(zeros, weights);
   }
@@ -132,6 +133,7 @@ class JacobiPolynomial {
       pm1 = ((A2(m) + A3(m) * x) * p - A4(m) * pm1) / A1(m);
       std::swap(p, pm1);
     }
+    return p;
   }
 };
 
