@@ -10,6 +10,8 @@
 #include <execution>
 #include <numeric>
 #include <vector>
+#include <utility>
+#include <ranges>
 
 #include "OrthogonalPolynomial.h"
 
@@ -35,6 +37,79 @@ concept Integrable = requires(Float w, FunctionValue f) {
   { f* w } -> std::same_as<FunctionValue>;
   { f + f } -> std::same_as<FunctionValue>;
 };
+
+template <std::floating_point Float>
+class Quad {
+  using Vector = std::vector<Float>;
+  using VectorPair = std::pair<Vector, Vector>;
+
+ public:
+  // Constructor given pair of vectors for points and weights.
+  Quad(VectorPair pair) : x{std::get<0>(pair)}, w{std::get<1>(pair)} {
+    assert(x.size() > 0);
+    assert(x.size() == x.size());
+  }
+
+  // Return the number of points.
+  int N() const { return x.size(); }
+
+  // Return the ith points or weights.
+  auto X(int i) const { return x[i]; }
+  auto W(int i) const { return w[i]; }
+
+  // Return constant references to the points and weights.
+  const Vector& Points() const { return x; }
+  const Vector& Weights() const { return w; }
+
+  // Simple integrator.
+  template <typename Function,
+            typename FunctionValue = std::invoke_result_t<Function, Float> >
+  requires Integrable<Float, Function, FunctionValue>
+  auto Integrate(const Function& f) {
+    return std::inner_product(
+        x.cbegin(), x.cend(), w.cbegin(), FunctionValue{}, std::plus<>(),
+        [f](Float x, Float w) -> FunctionValue { return f(x) * w; });
+  }
+
+ private:
+  Vector x;
+  Vector w;
+};
+
+// Factory functions for the Quad type.
+
+template <std::floating_point Float>
+auto GaussLegendreQuadrature(int n) {
+  return Quad(LegendrePolynomial<Float>{}.GaussQuadrature(n));
+}
+
+template <std::floating_point Float>
+auto GaussRadauLegendreQuadrature(int n) {
+  return Quad(LegendrePolynomial<Float>{}.GaussRadauQuadrature(n));
+}
+
+template <std::floating_point Float>
+auto GaussLobattoLegendreQuadrature(int n) {
+  return Quad(LegendrePolynomial<Float>{}.GaussLobattoQuadrature(n));
+}
+
+template <std::floating_point Float>
+auto GaussJacobiQuadrature(int n, Float alpha, Float beta) {
+  return Quad(JacobiPolynomial<Float>{alpha, beta}.GaussQuadrature(n));
+}
+
+template <std::floating_point Float>
+auto GaussRadauJacobiQuadrature(int n, Float alpha, Float beta) {
+  return Quad(JacobiPolynomial<Float>{alpha, beta}.GaussRadauQuadrature(n));
+}
+
+template <std::floating_point Float>
+auto GaussLobattoJacobiQuadrature(int n, Float alpha, Float beta) {
+  return Quad(JacobiPolynomial<Float>{alpha, beta}.GaussLobattoQuadrature(n));
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
 
 template <std::floating_point Float, typename QuadratureType = None>
 requires ValidQuadratureTypes<QuadratureType>
@@ -95,7 +170,6 @@ class Quadrature {
   const std::vector<Float>& x() const { return points; }
   const std::vector<Float>& w() const { return weights; }
 
-  //  template <std::invocable<Float> Function>
   template <typename Function,
             typename FunctionValue = std::invoke_result_t<Function, Float> >
   requires Integrable<Float, Function, FunctionValue>
