@@ -22,13 +22,34 @@ auto ComplexFunction = [](Float x) -> std::complex<Float> {
   return std::complex<Float>{x * x, x * x};
 };
 
-// Set the testing function.
-template <std::floating_point Float, typename QuadratureType>
-int TestQuad(int n) {
+template <std::floating_point Float>
+int TestGauss(int n) {
   using Complex = std::complex<Float>;
-  GaussQuad::Quadrature<Float, QuadratureType> q(n);
-  Float error1 = std::abs(q.integrate(RealFunction<Float>) - exact<Float>);
-  Float error2 = std::abs(q.integrate(ComplexFunction<Float>) -
+  auto q = GaussQuad::GaussLegendreQuadrature1D<Float>(n);
+  Float error1 = std::abs(q.Integrate(RealFunction<Float>) - exact<Float>);
+  Float error2 = std::abs(q.Integrate(ComplexFunction<Float>) -
+                          Complex{exact<Float>, exact<Float>});
+
+  return (error1 < eps<Float> and error2 < eps<Float>) ? 0 : 1;
+}
+
+template <std::floating_point Float>
+int TestRadau(int n) {
+  using Complex = std::complex<Float>;
+  auto q = GaussQuad::GaussRadauLegendreQuadrature1D<Float>(n);
+  Float error1 = std::abs(q.Integrate(RealFunction<Float>) - exact<Float>);
+  Float error2 = std::abs(q.Integrate(ComplexFunction<Float>) -
+                          Complex{exact<Float>, exact<Float>});
+
+  return (error1 < eps<Float> and error2 < eps<Float>) ? 0 : 1;
+}
+
+template <std::floating_point Float>
+int TestLobatto(int n) {
+  using Complex = std::complex<Float>;
+  auto q = GaussQuad::GaussLobattoLegendreQuadrature1D<Float>(n);
+  Float error1 = std::abs(q.Integrate(RealFunction<Float>) - exact<Float>);
+  Float error2 = std::abs(q.Integrate(ComplexFunction<Float>) -
                           Complex{exact<Float>, exact<Float>});
 
   return (error1 < eps<Float> and error2 < eps<Float>) ? 0 : 1;
@@ -36,46 +57,46 @@ int TestQuad(int n) {
 
 // Set the tests.
 TEST(Gauss, Float) {
-  int i = TestQuad<float, GaussQuad::None>(n);
+  int i = TestGauss<float>(n);
   EXPECT_EQ(i, 0);
 }
 
 TEST(Gauss, Double) {
-  int i = TestQuad<double, GaussQuad::None>(n);
+  int i = TestGauss<double>(n);
   EXPECT_EQ(i, 0);
 }
 
 TEST(Gauss, LongDouble) {
-  int i = TestQuad<long double, GaussQuad::None>(n);
+  int i = TestGauss<long double>(n);
   EXPECT_EQ(i, 0);
 }
 
 TEST(Radau, Float) {
-  int i = TestQuad<float, GaussQuad::Radau>(n);
+  int i = TestRadau<float>(n);
   EXPECT_EQ(i, 0);
 }
 
 TEST(Radau, Double) {
-  int i = TestQuad<double, GaussQuad::Radau>(n);
+  int i = TestRadau<double>(n);
   EXPECT_EQ(i, 0);
 }
 
 TEST(Radau, LongDouble) {
-  int i = TestQuad<long double, GaussQuad::Radau>(n);
+  int i = TestRadau<long double>(n);
   EXPECT_EQ(i, 0);
 }
 
 TEST(Lobatto, Float) {
-  int i = TestQuad<float, GaussQuad::Lobatto>(n);
+  int i = TestLobatto<float>(n);
   EXPECT_EQ(i, 0);
 }
 
 TEST(Lobatto, Double) {
-  int i = TestQuad<double, GaussQuad::Lobatto>(n);
+  int i = TestLobatto<double>(n);
   EXPECT_EQ(i, 0);
 }
 
 TEST(Lobatto, LongDouble) {
-  int i = TestQuad<long double, GaussQuad::Lobatto>(n);
+  int i = TestLobatto<long double>(n);
   EXPECT_EQ(i, 0);
 }

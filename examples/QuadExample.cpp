@@ -21,7 +21,7 @@ int main() {
 
   // Build the quadrature
   int n = 5;
-  auto q = GaussLobattoLegendreQuadrature<Float>(n);
+  auto q = GaussLobattoLegendreQuadrature1D<Float>(n);
 
   // write out the points and weights
   for (int i = 0; i < n; i++) {
