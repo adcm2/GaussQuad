@@ -31,7 +31,7 @@ class Quadrature1D {
   // Constructor given pair of vectors for points and weights.
   Quadrature1D(VectorPair pair) : x{std::get<0>(pair)}, w{std::get<1>(pair)} {
     assert(x.size() > 0);
-    assert(x.size() == x.size());
+    assert(x.size() == w.size());
   }
 
   // Return the number of points.
