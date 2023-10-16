@@ -29,21 +29,21 @@ class Quadrature1D {
 
  public:
   // Constructor given pair of vectors for points and weights.
-  Quadrature1D(VectorPair pair) : x{std::get<0>(pair)}, w{std::get<1>(pair)} {
-    assert(x.size() > 0);
-    assert(x.size() == w.size());
+  Quadrature1D(VectorPair pair) : _x{std::get<0>(pair)}, _w{std::get<1>(pair)} {
+    assert(_x.size() > 0);
+    assert(_x.size() == _w.size());
   }
 
   // Return the number of points.
-  int N() const { return x.size(); }
+  int N() const { return _x.size(); }
 
   // Return the ith points or weights.
-  auto X(int i) const { return x[i]; }
-  auto W(int i) const { return w[i]; }
+  auto X(int i) const { return _x[i]; }
+  auto W(int i) const { return _w[i]; }
 
   // Return constant references to the points and weights.
-  const Vector& Points() const { return x; }
-  const Vector& Weights() const { return w; }
+  const Vector& Points() const { return _x; }
+  const Vector& Weights() const { return _w; }
 
   // Simple integrator.
   template <typename Function,
@@ -51,13 +51,13 @@ class Quadrature1D {
   requires Integrable<Float, Function, FunctionValue>
   auto Integrate(const Function& f) {
     return std::inner_product(
-        x.cbegin(), x.cend(), w.cbegin(), FunctionValue{}, std::plus<>(),
+        _x.cbegin(), _x.cend(), _w.cbegin(), FunctionValue{}, std::plus<>(),
         [f](Float x, Float w) -> FunctionValue { return f(x) * w; });
   }
 
  private:
-  Vector x;
-  Vector w;
+  Vector _x;
+  Vector _w;
 };
 
 // Factory functions for the Quadrature1D type.

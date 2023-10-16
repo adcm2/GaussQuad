@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <GaussQuad/All>
-#include <Interp/Polynomial>
+#include <Interpolation/Polynomial>
 #include <complex>
 #include <concepts>
 #include <limits>
@@ -15,11 +15,11 @@ int TestGauss(int n) {
   auto q = GaussQuad::GaussLegendreQuadrature1D<Float>(n);
   int m = 2 * n - 1;
   if constexpr (Complex) {
-    auto p = Interp::Polynomial1D<std::complex<Float>>::Random(m);
+    auto p = Interpolation::Polynomial1D<std::complex<Float>>::Random(m);
     Float error = std::abs(q.Integrate(p) - p.Integrate(-1, 1));
     return (error < eps<Float>) ? 0 : 1;
   } else {
-    auto p = Interp::Polynomial1D<Float>::Random(m);
+    auto p = Interpolation::Polynomial1D<Float>::Random(m);
     Float error = std::abs(q.Integrate(p) - p.Integrate(-1, 1));
     return (error < eps<Float>) ? 0 : 1;
   }
@@ -30,11 +30,11 @@ int TestRadau(int n) {
   auto q = GaussQuad::GaussRadauLegendreQuadrature1D<Float>(n);
   int m = 2 * n - 3;
   if constexpr (Complex) {
-    auto p = Interp::Polynomial1D<std::complex<Float>>::Random(m);
+    auto p = Interpolation::Polynomial1D<std::complex<Float>>::Random(m);
     Float error = std::abs(q.Integrate(p) - p.Integrate(-1, 1));
     return (error < eps<Float>) ? 0 : 1;
   } else {
-    auto p = Interp::Polynomial1D<Float>::Random(m);
+    auto p = Interpolation::Polynomial1D<Float>::Random(m);
     Float error = std::abs(q.Integrate(p) - p.Integrate(-1, 1));
     return (error < eps<Float>) ? 0 : 1;
   }
@@ -45,11 +45,11 @@ int TestLobatto(int n) {
   auto q = GaussQuad::GaussLobattoLegendreQuadrature1D<Float>(n);
   int m = 2 * n - 3;
   if constexpr (Complex) {
-    auto p = Interp::Polynomial1D<std::complex<Float>>::Random(m);
+    auto p = Interpolation::Polynomial1D<std::complex<Float>>::Random(m);
     Float error = std::abs(q.Integrate(p) - p.Integrate(-1, 1));
     return (error < eps<Float>) ? 0 : 1;
   } else {
-    auto p = Interp::Polynomial1D<Float>::Random(m);
+    auto p = Interpolation::Polynomial1D<Float>::Random(m);
     Float error = std::abs(q.Integrate(p) - p.Integrate(-1, 1));
     return (error < eps<Float>) ? 0 : 1;
   }

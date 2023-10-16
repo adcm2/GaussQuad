@@ -40,6 +40,16 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     option(MY_PROJECT_BUILD_EXAMPLES   "whether or not examples should be built" ON)
     option(MY_PROJECT_BUILD_TESTS      "whether or not tests should be built" ON)
 
+
+    
+    include(FetchContent)
+    FetchContent_Declare(
+      Interpolation
+      GIT_REPOSITORY https://github.com/da380/Interpolation.git
+      GIT_TAG main
+      )
+    FetchContent_MakeAvailable(Interpolation)
+
     if(MY_PROJECT_BUILD_EXAMPLES)
         add_subdirectory(examples)
     endif()

@@ -23,14 +23,14 @@ class JacobiPolynomial {
 
  public:
   // Constructor.
-  JacobiPolynomial(Float alpha, Float beta) : alpha{alpha}, beta{beta} {}
+  JacobiPolynomial(Float alpha, Float beta) : _alpha{alpha}, _beta{beta} {}
 
   // Evaluation by upwards recursion.
   Float operator()(int n, Float x) const {
     assert(n >= 0);
     Float pm1 = static_cast<Float>(1);
     if (n == 0) return pm1;
-    Float p = 0.5 * (alpha - beta + (alpha + beta + 2) * x);
+    Float p = 0.5 * (_alpha - _beta + (_alpha + _beta + 2) * x);
     if (n == 1) return p;
     for (int m = 1; m < n; m++) {
       pm1 = ((A2(m) + A3(m) * x) * p - A4(m) * pm1) / A1(m);
@@ -45,10 +45,10 @@ class JacobiPolynomial {
       case 0:
         return 0;
       default:
-        Float tmp = 2 * n + alpha + beta;
+        Float tmp = 2 * n + _alpha + _beta;
         Float b1 = tmp * (1 - x * x);
-        Float b2 = n * (alpha - beta - tmp * x);
-        Float b3 = 2 * (n + alpha) * (n + beta);
+        Float b2 = n * (_alpha - _beta - tmp * x);
+        Float b3 = 2 * (n + _alpha) * (n + _beta);
         return (b2 * this->operator()(n, x) + b3 * this->operator()(n - 1, x)) /
                b1;
     }
@@ -91,10 +91,10 @@ class JacobiPolynomial {
       std::transform(zeros.begin(), zeros.end(), std::back_inserter(weights),
                      [&](auto z) { return Derivative(n, z); });
       Float fac =
-          std::exp(std::numbers::ln2_v<Float> * (alpha + beta + 1) +
-                   std::lgamma(alpha + n + 1) + std::lgamma(beta + n + 1) -
+          std::exp(std::numbers::ln2_v<Float> * (_alpha + _beta + 1) +
+                   std::lgamma(_alpha + n + 1) + std::lgamma(_beta + n + 1) -
                    std::lgamma(static_cast<Float>(n + 1)) -
-                   std::lgamma(alpha + beta + n + 1));
+                   std::lgamma(_alpha + _beta + n + 1));
       std::transform(
           zeros.begin(), zeros.end(), weights.begin(), weights.begin(),
           [fac](auto z, auto w) { return fac / (w * w * (1 - z * z)); });
@@ -213,7 +213,7 @@ class JacobiPolynomial {
   }
 
  private:
-  Float alpha, beta;
+  Float _alpha, _beta;
 
   // Basic data functions.
   constexpr Float X1() const { return -1; }
@@ -223,35 +223,36 @@ class JacobiPolynomial {
     using std::lgamma;
     using std::log;
     constexpr Float ln2 = std::numbers::ln2_v<Float>;
-    return exp(lgamma(alpha + 1) + lgamma(beta + 1) + ln2 * (alpha + beta + 1) -
-               lgamma(alpha + beta + 1) - log(alpha + beta + 1));
+    return exp(lgamma(_alpha + 1) + lgamma(_beta + 1) +
+               ln2 * (_alpha + _beta + 1) - lgamma(_alpha + _beta + 1) -
+               log(_alpha + _beta + 1));
   }
 
   // Recursion coefficient functions.
   Float A1(int n) const {
-    return 2 * (n + 1) * (n + alpha + beta + 1) * (2 * n + alpha + beta);
+    return 2 * (n + 1) * (n + _alpha + _beta + 1) * (2 * n + _alpha + _beta);
   }
   Float A2(int n) const {
-    return (2 * n + alpha + beta + 1) * (alpha * alpha - beta * beta);
+    return (2 * n + _alpha + _beta + 1) * (_alpha * _alpha - _beta * _beta);
   }
   Float A3(int n) const {
-    Float tmp = 2 * n + alpha + beta;
+    Float tmp = 2 * n + _alpha + _beta;
     return tmp * (tmp + 1) * (tmp + 2);
   }
   Float A4(int n) const {
-    return 2 * (n + alpha) * (n + beta) * (2 * n + alpha + beta + 2);
+    return 2 * (n + _alpha) * (n + _beta) * (2 * n + _alpha + _beta + 2);
   }
 
   // Matrix coefficients for Goulb and Welsch method.
   Float D(int n) const {
-    Float num = beta * beta - alpha * alpha;
-    Float den = (2 * n + alpha + beta - 2) * (2 * n + alpha + beta);
+    Float num = _beta * _beta - _alpha * _alpha;
+    Float den = (2 * n + _alpha + _beta - 2) * (2 * n + _alpha + _beta);
     return num != 0 ? num / den : 0.0;
   }
   Float E(int n) const {
-    Float num = 4 * n * (n + alpha) * (n + beta) * (n + alpha + beta);
-    Float den = (2 * n + alpha + beta - 1) * pow((2 * n + alpha + beta), 2) *
-                (2 * n + alpha + beta + 1);
+    Float num = 4 * n * (n + _alpha) * (n + _beta) * (n + _alpha + _beta);
+    Float den = (2 * n + _alpha + _beta - 1) *
+                pow((2 * n + _alpha + _beta), 2) * (2 * n + _alpha + _beta + 1);
     return std::sqrt(num / den);
   }
 };
@@ -259,45 +260,45 @@ class JacobiPolynomial {
 template <std::floating_point Float>
 class LegendrePolynomial {
  public:
-  LegendrePolynomial() : p{JacobiPolynomial<Float>(0, 0)} {}
+  LegendrePolynomial() : _p{JacobiPolynomial<Float>(0, 0)} {}
 
   // Evaluation functions.
-  Float operator()(int n, Float x) const { return p(n, x); }
-  Float Derivative(int n, Float x) const { return p.Derivative(n, x); }
+  Float operator()(int n, Float x) const { return _p(n, x); }
+  Float Derivative(int n, Float x) const { return _p.Derivative(n, x); }
 
   // Zeros and quadrature schemes.
-  auto Zeros(int n) const { return p.Zeros(n); }
-  auto GaussQuadrature(int n) const { return p.GaussQuadrature(n); }
-  auto GaussRadauQuadrature(int n) const { return p.GaussRadauQuadrature(n); }
+  auto Zeros(int n) const { return _p.Zeros(n); }
+  auto GaussQuadrature(int n) const { return _p.GaussQuadrature(n); }
+  auto GaussRadauQuadrature(int n) const { return _p.GaussRadauQuadrature(n); }
   auto GaussLobattoQuadrature(int n) const {
-    return p.GaussLobattoQuadrature(n);
+    return _p.GaussLobattoQuadrature(n);
   }
 
  private:
-  JacobiPolynomial<Float> p;
+  JacobiPolynomial<Float> _p;
 };
 
 template <std::floating_point Float>
 class ChebyshevPolynomial {
  public:
-  ChebyshevPolynomial() : p{JacobiPolynomial<Float>(-0.5, -0.5)} {}
+  ChebyshevPolynomial() : _p{JacobiPolynomial<Float>(-0.5, -0.5)} {}
 
   // Evaluation functions.
-  Float operator()(int n, Float x) const { return Scale(n) * p(n, x); }
+  Float operator()(int n, Float x) const { return Scale(n) * _p(n, x); }
   Float Derivative(int n, Float x) const {
-    return Scale(n) * p.Derivative(n, x);
+    return Scale(n) * _p.Derivative(n, x);
   }
 
   // Zeros and quadrature schemes.
-  auto Zeros(int n) const { return p.Zeros(n); }
-  auto GaussQuadrature(int n) const { return p.GaussQuadrature(n); }
-  auto GaussRadauQuadrature(int n) const { return p.GaussRadauQuadrature(n); }
+  auto Zeros(int n) const { return _p.Zeros(n); }
+  auto GaussQuadrature(int n) const { return _p.GaussQuadrature(n); }
+  auto GaussRadauQuadrature(int n) const { return _p.GaussRadauQuadrature(n); }
   auto GaussLobattoQuadrature(int n) const {
-    return p.GaussLobattoQuadrature(n);
+    return _p.GaussLobattoQuadrature(n);
   }
 
  private:
-  JacobiPolynomial<Float> p;
+  JacobiPolynomial<Float> _p;
   Float Scale(int n) {
     using std::exp;
     using std::lgamma;
