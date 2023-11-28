@@ -28,6 +28,8 @@ class Quadrature1D {
   using VectorPair = std::pair<Vector, Vector>;
 
  public:
+  Quadrature1D() = default;
+
   // Constructor given pair of vectors for points and weights.
   Quadrature1D(VectorPair pair) : _x{std::get<0>(pair)}, _w{std::get<1>(pair)} {
     assert(_x.size() > 0);
