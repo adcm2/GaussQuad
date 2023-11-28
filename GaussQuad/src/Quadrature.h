@@ -13,18 +13,18 @@
 namespace GaussQuad {
 
 // Concept for functions that can be integrated using quadrature.
-template <typename Float, typename Function, typename FunctionValue>
-concept Integrable = requires(Float w, FunctionValue f) {
-  requires std::floating_point<Float>;
-  requires std::invocable<Function, Float>;
-  requires std::same_as<std::invoke_result_t<Function, Float>, FunctionValue>;
+template <typename Real, typename Function, typename FunctionValue>
+concept Integrable = requires(Real w, FunctionValue f) {
+  requires std::floating_point<Real>;
+  requires std::invocable<Function, Real>;
+  requires std::same_as<std::invoke_result_t<Function, Real>, FunctionValue>;
   { f* w } -> std::same_as<FunctionValue>;
   { f + f } -> std::same_as<FunctionValue>;
 };
 
-template <std::floating_point Float>
+template <std::floating_point Real>
 class Quadrature1D {
-  using Vector = std::vector<Float>;
+  using Vector = std::vector<Real>;
   using VectorPair = std::pair<Vector, Vector>;
 
  public:
@@ -47,66 +47,73 @@ class Quadrature1D {
 
   // Simple integrator.
   template <typename Function,
-            typename FunctionValue = std::invoke_result_t<Function, Float> >
-  requires Integrable<Float, Function, FunctionValue>
+            typename FunctionValue = std::invoke_result_t<Function, Real> >
+  requires Integrable<Real, Function, FunctionValue>
   auto Integrate(const Function& f) {
     return std::inner_product(
         _x.cbegin(), _x.cend(), _w.cbegin(), FunctionValue{}, std::plus<>(),
-        [f](Float x, Float w) -> FunctionValue { return f(x) * w; });
+        [f](Real x, Real w) -> FunctionValue { return f(x) * w; });
   }
 
- private:
-  Vector _x;
-  Vector _w;
+  template <typename Function1, typename Function2>
+  void Transform(Function1 f, Function2 df) {
+    std::transform(_x.begin(), _x.end(), _x.begin(), f);
+    std::transform(_x.begin(), _x.end(), _w.begin(), _w.begin(),
+                   [&f, &df](auto x, auto w) { return df(x) * w; });
+  }
+
+   private:
+    Vector _x;
+    Vector _w;
 };
 
 // Factory functions for the Quadrature1D type.
 
-template <std::floating_point Float>
+template <std::floating_point Real>
 auto GaussLegendreQuadrature1D(int n) {
-  return Quadrature1D(LegendrePolynomial<Float>{}.GaussQuadrature(n));
+  return Quadrature1D(LegendrePolynomial<Real>{}.GaussQuadrature(n));
 }
 
-template <std::floating_point Float>
+template <std::floating_point Real>
 auto GaussRadauLegendreQuadrature1D(int n) {
-  return Quadrature1D(LegendrePolynomial<Float>{}.GaussRadauQuadrature(n));
+  return Quadrature1D(LegendrePolynomial<Real>{}.GaussRadauQuadrature(n));
 }
 
-template <std::floating_point Float>
+template <std::floating_point Real>
 auto GaussLobattoLegendreQuadrature1D(int n) {
-  return Quadrature1D(LegendrePolynomial<Float>{}.GaussLobattoQuadrature(n));
+  return Quadrature1D(LegendrePolynomial<Real>{}.GaussLobattoQuadrature(n));
 }
 
-template <std::floating_point Float>
+template <std::floating_point Real>
 auto GaussChebyshevQuadrature1D(int n) {
-  return Quadrature1D(ChebyshevPolynomial<Float>{}.GaussQuadrature(n));
+  return Quadrature1D(ChebyshevPolynomial<Real>{}.GaussQuadrature(n));
 }
 
-template <std::floating_point Float>
+template <std::floating_point Real>
 auto GaussRadauChebyshevQuadrature1D(int n) {
-  return Quadrature1D(ChebyshevPolynomial<Float>{}.GaussRadauQuadrature(n));
+  return Quadrature1D(ChebyshevPolynomial<Real>{}.GaussRadauQuadrature(n));
 }
 
-template <std::floating_point Float>
+template <std::floating_point Real>
 auto GaussLobattoChebyshevQuadrature1D(int n) {
-  return Quadrature1D(ChebyshevPolynomial<Float>{}.GaussLobattoQuadrature(n));
+  return Quadrature1D(ChebyshevPolynomial<Real>{}.GaussLobattoQuadrature(n));
 }
 
-template <std::floating_point Float>
-auto GaussJacobiQuadrature1D(int n, Float alpha, Float beta) {
-  return Quadrature1D(JacobiPolynomial<Float>{alpha, beta}.GaussQuadrature(n));
+template <std::floating_point Real>
+auto GaussJacobiQuadrature1D(int n, Real alpha, Real beta) {
+  return Quadrature1D(JacobiPolynomial<Real>{alpha, beta}.GaussQuadrature(n));
 }
 
-template <std::floating_point Float>
-auto GaussRadauJacobiQuadrature1D(int n, Float alpha, Float beta) {
+template <std::floating_point Real>
+auto GaussRadauJacobiQuadrature1D(int n, Real alpha, Real beta) {
   return Quadrature1D(
-      JacobiPolynomial<Float>{alpha, beta}.GaussRadauQuadrature(n));
+      JacobiPolynomial<Real>{alpha, beta}.GaussRadauQuadrature(n));
 }
 
-template <std::floating_point Float>
-auto GaussLobattoJacobiQuadrature1D(int n, Float alpha, Float beta) {
+template <std::floating_point Real>
+auto GaussLobattoJacobiQuadrature1D(int n, Real alpha, Real beta) {
   return Quadrature1D(
-      JacobiPolynomial<Float>{alpha, beta}.GaussLobattoQuadrature(n));
+      JacobiPolynomial<Real>{alpha, beta}.GaussLobattoQuadrature(n));
 }
 
 }  // namespace GaussQuad

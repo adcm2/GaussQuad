@@ -15,22 +15,22 @@
 
 namespace GaussQuad {
 
-template <std::floating_point Float>
+template <std::floating_point Real>
 class JacobiPolynomial {
   // Type aliases for Eigen3
-  using Matrix = Eigen::Matrix<Float, Eigen::Dynamic, Eigen::Dynamic>;
-  using Vector = Eigen::Matrix<Float, Eigen::Dynamic, 1>;
+  using Matrix = Eigen::Matrix<Real, Eigen::Dynamic, Eigen::Dynamic>;
+  using Vector = Eigen::Matrix<Real, Eigen::Dynamic, 1>;
 
  public:
   // Constructor.
-  JacobiPolynomial(Float alpha, Float beta) : _alpha{alpha}, _beta{beta} {}
+  JacobiPolynomial(Real alpha, Real beta) : _alpha{alpha}, _beta{beta} {}
 
   // Evaluation by upwards recursion.
-  Float operator()(int n, Float x) const {
+  Real operator()(int n, Real x) const {
     assert(n >= 0);
-    Float pm1 = static_cast<Float>(1);
+    Real pm1 = static_cast<Real>(1);
     if (n == 0) return pm1;
-    Float p = 0.5 * (_alpha - _beta + (_alpha + _beta + 2) * x);
+    Real p = 0.5 * (_alpha - _beta + (_alpha + _beta + 2) * x);
     if (n == 1) return p;
     for (int m = 1; m < n; m++) {
       pm1 = ((A2(m) + A3(m) * x) * p - A4(m) * pm1) / A1(m);
@@ -40,15 +40,15 @@ class JacobiPolynomial {
   }
 
   // Evaluation of derivatices via recursion.
-  Float Derivative(int n, Float x) const {
+  Real Derivative(int n, Real x) const {
     switch (n) {
       case 0:
         return 0;
       default:
-        Float tmp = 2 * n + _alpha + _beta;
-        Float b1 = tmp * (1 - x * x);
-        Float b2 = n * (_alpha - _beta - tmp * x);
-        Float b3 = 2 * (n + _alpha) * (n + _beta);
+        Real tmp = 2 * n + _alpha + _beta;
+        Real b1 = tmp * (1 - x * x);
+        Real b2 = n * (_alpha - _beta - tmp * x);
+        Real b3 = 2 * (n + _alpha) * (n + _beta);
         return (b2 * this->operator()(n, x) + b3 * this->operator()(n - 1, x)) /
                b1;
     }
@@ -57,21 +57,21 @@ class JacobiPolynomial {
   // Return zeros of the polynomial.
   auto Zeros(int n) const {
     assert(n >= 0);
-    std::vector<Float> zeros;
+    std::vector<Real> zeros;
     zeros.reserve(n);
     const int maxIter = 30;
-    const Float epsilon = std::numeric_limits<Float>::epsilon();
-    const Float dth = std::numbers::pi_v<Float> / (2 * n);
+    const Real epsilon = std::numeric_limits<Real>::epsilon();
+    const Real dth = std::numbers::pi_v<Real> / (2 * n);
     for (int k = 0; k < n; k++) {
-      Float r = -std::cos((2 * k + 1) * dth);
+      Real r = -std::cos((2 * k + 1) * dth);
       if (k > 0) r = 0.5 * (r + zeros[k - 1]);
       for (int j = 1; j < maxIter; j++) {
-        Float fun = this->operator()(n, r);
-        Float der = Derivative(n, r);
-        Float sum = 0;
+        Real fun = this->operator()(n, r);
+        Real der = Derivative(n, r);
+        Real sum = 0;
         for (int i = 0; i < k; i++)
-          sum += static_cast<Float>(1) / (r - zeros[i]);
-        Float delr = -fun / (der - sum * fun);
+          sum += static_cast<Real>(1) / (r - zeros[i]);
+        Real delr = -fun / (der - sum * fun);
         r += delr;
         if (std::abs(delr) < epsilon) break;
       }
@@ -86,14 +86,14 @@ class JacobiPolynomial {
     if (n > 100) {
       // For large orders use root method.
       auto zeros = Zeros(n);
-      std::vector<Float> weights;
+      std::vector<Real> weights;
       weights.reserve(n);
       std::transform(zeros.begin(), zeros.end(), std::back_inserter(weights),
                      [&](auto z) { return Derivative(n, z); });
-      Float fac =
-          std::exp(std::numbers::ln2_v<Float> * (_alpha + _beta + 1) +
+      Real fac =
+          std::exp(std::numbers::ln2_v<Real> * (_alpha + _beta + 1) +
                    std::lgamma(_alpha + n + 1) + std::lgamma(_beta + n + 1) -
-                   std::lgamma(static_cast<Float>(n + 1)) -
+                   std::lgamma(static_cast<Real>(n + 1)) -
                    std::lgamma(_alpha + _beta + n + 1));
       std::transform(
           zeros.begin(), zeros.end(), weights.begin(), weights.begin(),
@@ -106,7 +106,7 @@ class JacobiPolynomial {
         A.diagonal()(i) = D(i + 1);
       }
       for (int i = 0; i < n - 1; i++) {
-        Float tmp = E(i + 1);
+        Real tmp = E(i + 1);
         A.diagonal(+1)(i) = tmp;
         A.diagonal(-1)(i) = tmp;
       }
@@ -117,7 +117,7 @@ class JacobiPolynomial {
       auto weights = std::vector(es.eigenvectors().row(0).begin(),
                                  es.eigenvectors().row(0).end());
       std::transform(weights.cbegin(), weights.cend(), weights.begin(),
-                     [this](Float w) -> Float { return Mu() * w * w; });
+                     [this](Real w) -> Real { return Mu() * w * w; });
       return std::pair(zeros, weights);
     }
   }
@@ -131,7 +131,7 @@ class JacobiPolynomial {
       B.diagonal()(i) = D(i + 1) - X1();
     }
     for (int i = 0; i < m - 1; i++) {
-      Float tmp = E(i + 1);
+      Real tmp = E(i + 1);
       B.diagonal(+1)(i) = tmp;
       B.diagonal(-1)(i) = tmp;
     }
@@ -144,7 +144,7 @@ class JacobiPolynomial {
     }
     A(m, m) = X1() + x(m - 1);
     for (int i = 0; i < m; i++) {
-      Float tmp = E(i + 1);
+      Real tmp = E(i + 1);
       A.diagonal(+1)(i) = tmp;
       A.diagonal(-1)(i) = tmp;
     }
@@ -154,7 +154,7 @@ class JacobiPolynomial {
     auto weights = std::vector(es.eigenvectors().row(0).begin(),
                                es.eigenvectors().row(0).end());
     std::transform(weights.cbegin(), weights.cend(), weights.begin(),
-                   [this](Float w) -> Float { return Mu() * w * w; });
+                   [this](Real w) -> Real { return Mu() * w * w; });
     return std::pair(zeros, weights);
   }
 
@@ -167,38 +167,38 @@ class JacobiPolynomial {
       B.diagonal()(i) = D(i + 1) - X1();
     }
     for (int i = 0; i < m - 1; i++) {
-      Float tmp = E(i + 1);
+      Real tmp = E(i + 1);
       B.diagonal(+1)(i) = tmp;
       B.diagonal(-1)(i) = tmp;
     }
     Vector y{Vector::Zero(m)};
     y(m - 1) = 1.0;
     Vector x = B.llt().solve(y);
-    Float gamma = x(m - 1);
+    Real gamma = x(m - 1);
 
     for (int i = 0; i < m; i++) {
       B.diagonal()(i) = X2() - D(i + 1);
     }
     for (int i = 0; i < m - 1; i++) {
-      Float tmp = -E(i + 1);
+      Real tmp = -E(i + 1);
       B.diagonal(+1)(i) = -tmp;
       B.diagonal(-1)(i) = -tmp;
     }
     y(m - 1) = -1.0;
     x = B.llt().solve(y);
-    Float mu = x(m - 1);
+    Real mu = x(m - 1);
 
     Matrix A{Matrix::Zero(n, n)};
     for (int i = 0; i < m; i++) {
       A.diagonal()(i) = D(i + 1);
     }
     for (int i = 0; i < m - 1; i++) {
-      Float tmp = E(i + 1);
+      Real tmp = E(i + 1);
       A.diagonal(+1)(i) = tmp;
       A.diagonal(-1)(i) = tmp;
     }
     using std::sqrt;
-    Float tmp = sqrt((X2() - X1()) / (gamma - mu));
+    Real tmp = sqrt((X2() - X1()) / (gamma - mu));
     A.diagonal(+1)(m - 1) = tmp;
     A.diagonal(-1)(m - 1) = tmp;
     A.diagonal()(m) = X1() + gamma * tmp * tmp;
@@ -208,63 +208,63 @@ class JacobiPolynomial {
     auto weights = std::vector(es.eigenvectors().row(0).begin(),
                                es.eigenvectors().row(0).end());
     std::transform(weights.cbegin(), weights.cend(), weights.begin(),
-                   [this](Float w) -> Float { return Mu() * w * w; });
+                   [this](Real w) -> Real { return Mu() * w * w; });
     return std::pair(zeros, weights);
   }
 
  private:
-  Float _alpha, _beta;
+  Real _alpha, _beta;
 
   // Basic data functions.
-  constexpr Float X1() const { return -1; }
-  constexpr Float X2() const { return 1; }
-  Float Mu() const {
+  constexpr Real X1() const { return -1; }
+  constexpr Real X2() const { return 1; }
+  Real Mu() const {
     using std::exp;
     using std::lgamma;
     using std::log;
-    constexpr Float ln2 = std::numbers::ln2_v<Float>;
+    constexpr Real ln2 = std::numbers::ln2_v<Real>;
     return exp(lgamma(_alpha + 1) + lgamma(_beta + 1) +
                ln2 * (_alpha + _beta + 1) - lgamma(_alpha + _beta + 1) -
                log(_alpha + _beta + 1));
   }
 
   // Recursion coefficient functions.
-  Float A1(int n) const {
+  Real A1(int n) const {
     return 2 * (n + 1) * (n + _alpha + _beta + 1) * (2 * n + _alpha + _beta);
   }
-  Float A2(int n) const {
+  Real A2(int n) const {
     return (2 * n + _alpha + _beta + 1) * (_alpha * _alpha - _beta * _beta);
   }
-  Float A3(int n) const {
-    Float tmp = 2 * n + _alpha + _beta;
+  Real A3(int n) const {
+    Real tmp = 2 * n + _alpha + _beta;
     return tmp * (tmp + 1) * (tmp + 2);
   }
-  Float A4(int n) const {
+  Real A4(int n) const {
     return 2 * (n + _alpha) * (n + _beta) * (2 * n + _alpha + _beta + 2);
   }
 
   // Matrix coefficients for Goulb and Welsch method.
-  Float D(int n) const {
-    Float num = _beta * _beta - _alpha * _alpha;
-    Float den = (2 * n + _alpha + _beta - 2) * (2 * n + _alpha + _beta);
+  Real D(int n) const {
+    Real num = _beta * _beta - _alpha * _alpha;
+    Real den = (2 * n + _alpha + _beta - 2) * (2 * n + _alpha + _beta);
     return num != 0 ? num / den : 0.0;
   }
-  Float E(int n) const {
-    Float num = 4 * n * (n + _alpha) * (n + _beta) * (n + _alpha + _beta);
-    Float den = (2 * n + _alpha + _beta - 1) *
-                pow((2 * n + _alpha + _beta), 2) * (2 * n + _alpha + _beta + 1);
+  Real E(int n) const {
+    Real num = 4 * n * (n + _alpha) * (n + _beta) * (n + _alpha + _beta);
+    Real den = (2 * n + _alpha + _beta - 1) * pow((2 * n + _alpha + _beta), 2) *
+               (2 * n + _alpha + _beta + 1);
     return std::sqrt(num / den);
   }
 };
 
-template <std::floating_point Float>
+template <std::floating_point Real>
 class LegendrePolynomial {
  public:
-  LegendrePolynomial() : _p{JacobiPolynomial<Float>(0, 0)} {}
+  LegendrePolynomial() : _p{JacobiPolynomial<Real>(0, 0)} {}
 
   // Evaluation functions.
-  Float operator()(int n, Float x) const { return _p(n, x); }
-  Float Derivative(int n, Float x) const { return _p.Derivative(n, x); }
+  Real operator()(int n, Real x) const { return _p(n, x); }
+  Real Derivative(int n, Real x) const { return _p.Derivative(n, x); }
 
   // Zeros and quadrature schemes.
   auto Zeros(int n) const { return _p.Zeros(n); }
@@ -275,17 +275,17 @@ class LegendrePolynomial {
   }
 
  private:
-  JacobiPolynomial<Float> _p;
+  JacobiPolynomial<Real> _p;
 };
 
-template <std::floating_point Float>
+template <std::floating_point Real>
 class ChebyshevPolynomial {
  public:
-  ChebyshevPolynomial() : _p{JacobiPolynomial<Float>(-0.5, -0.5)} {}
+  ChebyshevPolynomial() : _p{JacobiPolynomial<Real>(-0.5, -0.5)} {}
 
   // Evaluation functions.
-  Float operator()(int n, Float x) const { return Scale(n) * _p(n, x); }
-  Float Derivative(int n, Float x) const {
+  Real operator()(int n, Real x) const { return Scale(n) * _p(n, x); }
+  Real Derivative(int n, Real x) const {
     return Scale(n) * _p.Derivative(n, x);
   }
 
@@ -298,14 +298,13 @@ class ChebyshevPolynomial {
   }
 
  private:
-  JacobiPolynomial<Float> _p;
-  Float Scale(int n) {
+  JacobiPolynomial<Real> _p;
+  Real Scale(int n) {
     using std::exp;
     using std::lgamma;
     using std::log;
-    constexpr Float ln2 = std::numbers::ln2_v<Float>;
-    return exp(2 * n * ln2 + 2 * lgamma<Float>(n + 1) -
-               lgamma<Float>(2 * n + 1));
+    constexpr Real ln2 = std::numbers::ln2_v<Real>;
+    return exp(2 * n * ln2 + 2 * lgamma<Real>(n + 1) - lgamma<Real>(2 * n + 1));
 
     return;
   }

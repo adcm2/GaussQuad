@@ -5,7 +5,7 @@
 #include <iostream>
 
 int main() {
-  using Float = double;
+  using Real = double;
 
   using namespace GaussQuad;
 
@@ -17,11 +17,11 @@ int main() {
   cout.precision(16);
 
   // Set the floating point precision
-  using Float = double;
+  using Real = double;
 
   // Build the quadrature
   int n = 5;
-  auto q = GaussLobattoLegendreQuadrature1D<Float>(n);
+  auto q = GaussLobattoLegendreQuadrature1D<Real>(n);
 
   // write out the points and weights
   for (int i = 0; i < n; i++) {
@@ -29,10 +29,10 @@ int main() {
   }
 
   // define a simple function to integrate
-  auto fun = [](Float x) { return x * x; };
+  auto fun = [](Real x) { return x * x; };
 
   // set the exact value for the integral
-  Float exact = Float(2.0) / Float(3.0);
+  Real exact = Real(2.0) / Real(3.0);
 
   cout << "Numerical value = " << q.Integrate(fun)
        << ", exact value = " << exact << endl;

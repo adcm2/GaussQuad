@@ -7,51 +7,51 @@
 #include <limits>
 #include <random>
 
-template <std::floating_point Float>
-constexpr auto eps = 2000 * std::numeric_limits<Float>::epsilon();
+template <std::floating_point Real>
+constexpr auto eps = 2000 * std::numeric_limits<Real>::epsilon();
 
-template <std::floating_point Float, bool Complex = false>
+template <std::floating_point Real, bool Complex = false>
 int TestGauss(int n) {
-  auto q = GaussQuad::GaussLegendreQuadrature1D<Float>(n);
+  auto q = GaussQuad::GaussLegendreQuadrature1D<Real>(n);
   int m = 2 * n - 1;
   if constexpr (Complex) {
-    auto p = Interpolation::Polynomial1D<std::complex<Float>>::Random(m);
-    Float error = std::abs(q.Integrate(p) - p.Integrate(-1, 1));
-    return (error < eps<Float>) ? 0 : 1;
+    auto p = Interpolation::Polynomial1D<std::complex<Real>>::Random(m);
+    Real error = std::abs(q.Integrate(p) - p.Integrate(-1, 1));
+    return (error < eps<Real>) ? 0 : 1;
   } else {
-    auto p = Interpolation::Polynomial1D<Float>::Random(m);
-    Float error = std::abs(q.Integrate(p) - p.Integrate(-1, 1));
-    return (error < eps<Float>) ? 0 : 1;
+    auto p = Interpolation::Polynomial1D<Real>::Random(m);
+    Real error = std::abs(q.Integrate(p) - p.Integrate(-1, 1));
+    return (error < eps<Real>) ? 0 : 1;
   }
 }
 
-template <std::floating_point Float, bool Complex = false>
+template <std::floating_point Real, bool Complex = false>
 int TestRadau(int n) {
-  auto q = GaussQuad::GaussRadauLegendreQuadrature1D<Float>(n);
+  auto q = GaussQuad::GaussRadauLegendreQuadrature1D<Real>(n);
   int m = 2 * n - 3;
   if constexpr (Complex) {
-    auto p = Interpolation::Polynomial1D<std::complex<Float>>::Random(m);
-    Float error = std::abs(q.Integrate(p) - p.Integrate(-1, 1));
-    return (error < eps<Float>) ? 0 : 1;
+    auto p = Interpolation::Polynomial1D<std::complex<Real>>::Random(m);
+    Real error = std::abs(q.Integrate(p) - p.Integrate(-1, 1));
+    return (error < eps<Real>) ? 0 : 1;
   } else {
-    auto p = Interpolation::Polynomial1D<Float>::Random(m);
-    Float error = std::abs(q.Integrate(p) - p.Integrate(-1, 1));
-    return (error < eps<Float>) ? 0 : 1;
+    auto p = Interpolation::Polynomial1D<Real>::Random(m);
+    Real error = std::abs(q.Integrate(p) - p.Integrate(-1, 1));
+    return (error < eps<Real>) ? 0 : 1;
   }
 }
 
-template <std::floating_point Float, bool Complex = false>
+template <std::floating_point Real, bool Complex = false>
 int TestLobatto(int n) {
-  auto q = GaussQuad::GaussLobattoLegendreQuadrature1D<Float>(n);
+  auto q = GaussQuad::GaussLobattoLegendreQuadrature1D<Real>(n);
   int m = 2 * n - 3;
   if constexpr (Complex) {
-    auto p = Interpolation::Polynomial1D<std::complex<Float>>::Random(m);
-    Float error = std::abs(q.Integrate(p) - p.Integrate(-1, 1));
-    return (error < eps<Float>) ? 0 : 1;
+    auto p = Interpolation::Polynomial1D<std::complex<Real>>::Random(m);
+    Real error = std::abs(q.Integrate(p) - p.Integrate(-1, 1));
+    return (error < eps<Real>) ? 0 : 1;
   } else {
-    auto p = Interpolation::Polynomial1D<Float>::Random(m);
-    Float error = std::abs(q.Integrate(p) - p.Integrate(-1, 1));
-    return (error < eps<Float>) ? 0 : 1;
+    auto p = Interpolation::Polynomial1D<Real>::Random(m);
+    Real error = std::abs(q.Integrate(p) - p.Integrate(-1, 1));
+    return (error < eps<Real>) ? 0 : 1;
   }
 }
 
