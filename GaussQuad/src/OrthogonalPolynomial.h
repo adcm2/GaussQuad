@@ -26,13 +26,13 @@ class JacobiPolynomial {
   JacobiPolynomial(Real alpha, Real beta) : _alpha{alpha}, _beta{beta} {}
 
   // Evaluation by upwards recursion.
-  Real operator()(int n, Real x) const {
+  Real operator()(long int n, Real x) const {
     assert(n >= 0);
-    Real pm1 = static_cast<Real>(1);
+    auto pm1 = static_cast<Real>(1);
     if (n == 0) return pm1;
-    Real p = 0.5 * (_alpha - _beta + (_alpha + _beta + 2) * x);
+    auto p = 0.5 * (_alpha - _beta + (_alpha + _beta + 2) * x);
     if (n == 1) return p;
-    for (int m = 1; m < n; m++) {
+    for (auto m = 1; m < n; m++) {
       pm1 = ((A2(m) + A3(m) * x) * p - A4(m) * pm1) / A1(m);
       std::swap(p, pm1);
     }
@@ -40,38 +40,38 @@ class JacobiPolynomial {
   }
 
   // Evaluation of derivatices via recursion.
-  Real Derivative(int n, Real x) const {
+  Real Derivative(long int n, Real x) const {
     switch (n) {
       case 0:
         return 0;
       default:
-        Real tmp = 2 * n + _alpha + _beta;
-        Real b1 = tmp * (1 - x * x);
-        Real b2 = n * (_alpha - _beta - tmp * x);
-        Real b3 = 2 * (n + _alpha) * (n + _beta);
+        auto tmp = 2 * n + _alpha + _beta;
+        auto b1 = tmp * (1 - x * x);
+        auto b2 = n * (_alpha - _beta - tmp * x);
+        auto b3 = 2 * (n + _alpha) * (n + _beta);
         return (b2 * this->operator()(n, x) + b3 * this->operator()(n - 1, x)) /
                b1;
     }
   }
 
   // Return zeros of the polynomial.
-  auto Zeros(int n) const {
+  auto Zeros(long int n) const {
     assert(n >= 0);
     std::vector<Real> zeros;
     zeros.reserve(n);
     const int maxIter = 30;
     const Real epsilon = std::numeric_limits<Real>::epsilon();
     const Real dth = std::numbers::pi_v<Real> / (2 * n);
-    for (int k = 0; k < n; k++) {
-      Real r = -std::cos((2 * k + 1) * dth);
+    for (auto k = 0; k < n; k++) {
+      auto r = -std::cos((2 * k + 1) * dth);
       if (k > 0) r = 0.5 * (r + zeros[k - 1]);
-      for (int j = 1; j < maxIter; j++) {
-        Real fun = this->operator()(n, r);
-        Real der = Derivative(n, r);
-        Real sum = 0;
-        for (int i = 0; i < k; i++)
+      for (auto j = 1; j < maxIter; j++) {
+        auto fun = this->operator()(n, r);
+        auto der = Derivative(n, r);
+        auto sum = 0;
+        for (auto i = 0; i < k; i++)
           sum += static_cast<Real>(1) / (r - zeros[i]);
-        Real delr = -fun / (der - sum * fun);
+        auto delr = -fun / (der - sum * fun);
         r += delr;
         if (std::abs(delr) < epsilon) break;
       }

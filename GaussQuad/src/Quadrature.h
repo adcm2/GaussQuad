@@ -64,9 +64,9 @@ class Quadrature1D {
                    [&f, &df](auto x, auto w) { return df(x) * w; });
   }
 
-   private:
-    Vector _x;
-    Vector _w;
+ private:
+  Vector _x;
+  Vector _w;
 };
 
 // Factory functions for the Quadrature1D type.
