@@ -18,6 +18,7 @@ namespace GaussQuad {
 template <std::floating_point Real>
 class JacobiPolynomial {
   // Type aliases for Eigen3
+  using Int = std::ptrdiff_t;
   using Matrix = Eigen::Matrix<Real, Eigen::Dynamic, Eigen::Dynamic>;
   using Vector = Eigen::Matrix<Real, Eigen::Dynamic, 1>;
 
@@ -26,11 +27,12 @@ class JacobiPolynomial {
   JacobiPolynomial(Real alpha, Real beta) : _alpha{alpha}, _beta{beta} {}
 
   // Evaluation by upwards recursion.
-  Real operator()(long int n, Real x) const {
+  Real operator()(Int n, Real x) const {
     assert(n >= 0);
+    constexpr auto half = static_cast<Real>(1) / static_cast<Real>(2);
     auto pm1 = static_cast<Real>(1);
     if (n == 0) return pm1;
-    auto p = 0.5 * (_alpha - _beta + (_alpha + _beta + 2) * x);
+    auto p = half * (_alpha - _beta + (_alpha + _beta + 2) * x);
     if (n == 1) return p;
     for (auto m = 1; m < n; m++) {
       pm1 = ((A2(m) + A3(m) * x) * p - A4(m) * pm1) / A1(m);
@@ -40,7 +42,7 @@ class JacobiPolynomial {
   }
 
   // Evaluation of derivatices via recursion.
-  Real Derivative(long int n, Real x) const {
+  Real Derivative(Int n, Real x) const {
     switch (n) {
       case 0:
         return 0;
@@ -55,16 +57,17 @@ class JacobiPolynomial {
   }
 
   // Return zeros of the polynomial.
-  auto Zeros(long int n) const {
+  auto Zeros(Int n) const {
     assert(n >= 0);
     std::vector<Real> zeros;
     zeros.reserve(n);
-    const int maxIter = 30;
-    const Real epsilon = std::numeric_limits<Real>::epsilon();
-    const Real dth = std::numbers::pi_v<Real> / (2 * n);
+    const auto maxIter = Int{30};
+    constexpr auto half = static_cast<Real>(1) / static_cast<Real>(2);
+    constexpr auto epsilon = std::numeric_limits<Real>::epsilon();
+    const auto dth = std::numbers::pi_v<Real> / static_cast<Real>(2 * n);
     for (auto k = 0; k < n; k++) {
       auto r = -std::cos((2 * k + 1) * dth);
-      if (k > 0) r = 0.5 * (r + zeros[k - 1]);
+      if (k > 0) r = half * (r + zeros[k - 1]);
       for (auto j = 1; j < maxIter; j++) {
         auto fun = this->operator()(n, r);
         auto der = Derivative(n, r);
