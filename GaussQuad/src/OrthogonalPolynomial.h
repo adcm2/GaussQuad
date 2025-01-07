@@ -13,9 +13,11 @@
 #include <utility>
 #include <vector>
 
+#include "NumericConcepts/Numeric.hpp"
+
 namespace GaussQuad {
 
-template <std::floating_point Real>
+template <NumericConcepts::Real Real>
 class JacobiPolynomial {
   // Type aliases for Eigen3
   using Int = std::ptrdiff_t;
@@ -260,7 +262,7 @@ class JacobiPolynomial {
   }
 };
 
-template <std::floating_point Real>
+template <NumericConcepts::Real Real>
 class LegendrePolynomial {
  public:
   LegendrePolynomial() : _p{JacobiPolynomial<Real>(0, 0)} {}
@@ -281,7 +283,7 @@ class LegendrePolynomial {
   JacobiPolynomial<Real> _p;
 };
 
-template <std::floating_point Real>
+template <NumericConcepts::Real Real>
 class ChebyshevPolynomial {
  public:
   ChebyshevPolynomial() : _p{JacobiPolynomial<Real>(-0.5, -0.5)} {}

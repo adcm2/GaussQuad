@@ -2,12 +2,15 @@
 #define GAUSS_QUAD_QUADRATURE_GUARD_H
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <concepts>
 #include <numeric>
 #include <ranges>
 #include <utility>
 
+#include "NumericConcepts/Functions.hpp"
+#include "NumericConcepts/Numeric.hpp"
 #include "OrthogonalPolynomial.h"
 
 namespace GaussQuad {
@@ -15,14 +18,13 @@ namespace GaussQuad {
 // Concept for functions that can be integrated using quadrature.
 template <typename Real, typename Function, typename FunctionValue>
 concept Integrable = requires(Real w, FunctionValue f) {
-  requires std::floating_point<Real>;
-  requires std::invocable<Function, Real>;
-  requires std::same_as<std::invoke_result_t<Function, Real>, FunctionValue>;
+  requires NumericConcepts::Real<Real>;
+  requires NumericConcepts::Function<Function, FunctionValue, Real>;
   { f* w } -> std::same_as<FunctionValue>;
   { f + f } -> std::same_as<FunctionValue>;
 };
 
-template <std::floating_point Real>
+template <NumericConcepts::Real Real>
 class Quadrature1D {
   using Vector = std::vector<Real>;
   using VectorPair = std::pair<Vector, Vector>;
@@ -49,7 +51,7 @@ class Quadrature1D {
 
   // Simple integrator.
   template <typename Function,
-            typename FunctionValue = std::invoke_result_t<Function, Real> >
+            typename FunctionValue = std::invoke_result_t<Function, Real>>
   requires Integrable<Real, Function, FunctionValue>
   auto Integrate(const Function& f) {
     return std::inner_product(
@@ -71,48 +73,48 @@ class Quadrature1D {
 
 // Factory functions for the Quadrature1D type.
 
-template <std::floating_point Real>
+template <NumericConcepts::Real Real>
 auto GaussLegendreQuadrature1D(int n) {
   return Quadrature1D(LegendrePolynomial<Real>{}.GaussQuadrature(n));
 }
 
-template <std::floating_point Real>
+template <NumericConcepts::Real Real>
 auto GaussRadauLegendreQuadrature1D(int n) {
   return Quadrature1D(LegendrePolynomial<Real>{}.GaussRadauQuadrature(n));
 }
 
-template <std::floating_point Real>
+template <NumericConcepts::Real Real>
 auto GaussLobattoLegendreQuadrature1D(int n) {
   return Quadrature1D(LegendrePolynomial<Real>{}.GaussLobattoQuadrature(n));
 }
 
-template <std::floating_point Real>
+template <NumericConcepts::Real Real>
 auto GaussChebyshevQuadrature1D(int n) {
   return Quadrature1D(ChebyshevPolynomial<Real>{}.GaussQuadrature(n));
 }
 
-template <std::floating_point Real>
+template <NumericConcepts::Real Real>
 auto GaussRadauChebyshevQuadrature1D(int n) {
   return Quadrature1D(ChebyshevPolynomial<Real>{}.GaussRadauQuadrature(n));
 }
 
-template <std::floating_point Real>
+template <NumericConcepts::Real Real>
 auto GaussLobattoChebyshevQuadrature1D(int n) {
   return Quadrature1D(ChebyshevPolynomial<Real>{}.GaussLobattoQuadrature(n));
 }
 
-template <std::floating_point Real>
+template <NumericConcepts::Real Real>
 auto GaussJacobiQuadrature1D(int n, Real alpha, Real beta) {
   return Quadrature1D(JacobiPolynomial<Real>{alpha, beta}.GaussQuadrature(n));
 }
 
-template <std::floating_point Real>
+template <NumericConcepts::Real Real>
 auto GaussRadauJacobiQuadrature1D(int n, Real alpha, Real beta) {
   return Quadrature1D(
       JacobiPolynomial<Real>{alpha, beta}.GaussRadauQuadrature(n));
 }
 
-template <std::floating_point Real>
+template <NumericConcepts::Real Real>
 auto GaussLobattoJacobiQuadrature1D(int n, Real alpha, Real beta) {
   return Quadrature1D(
       JacobiPolynomial<Real>{alpha, beta}.GaussLobattoQuadrature(n));
